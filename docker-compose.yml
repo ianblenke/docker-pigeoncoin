@@ -1,0 +1,74 @@
+version: '2.1'
+
+x-logging:
+  &default-logging
+  options:
+    max-size: '12m'
+    max-file: '5'
+  driver: json-file
+
+volumes:
+
+  pigeoncoin-data:
+    driver: local
+
+services:
+
+  pigeoncoin-wallet:
+    build:
+      context: .
+      dockerfile: Dockerfile.wallet
+    image: sofwerx/pigeoncoin-wallet
+    container_name: pigeoncoin-wallet
+    hostname: pigeoncoin-wallet
+    logging: *default-logging
+    volumes:
+      - pigeoncoin-data:/root/.pigeon
+    ports:
+      - 127.0.0.1:8768:8768 # IPC - Keep protected!
+
+#  pigeoncoin-ccminer:
+#    build:
+#      context: .
+#      args:
+#        ARCH: ${ARCH}
+#      dockerfile: Dockerfile.ccminer.${ARCH}
+#    image: sofwerx/pigeoncoin-ccminer
+#    container_name: pigeoncoin-ccminer
+#    hostname: pigeoncoin-ccminer
+#    environment:
+#      URL: ${URL}
+#      USERNAME: ${USERNAME}
+#      PASSWORD: ${PASSWORD}
+#    logging: *default-logging
+
+  pigeoncoin-nevermore:
+    build:
+      context: .
+      args:
+        ARCH: ${ARCH}
+      dockerfile: Dockerfile.nevermore.${ARCH}
+    image: sofwerx/nevermore
+    container_name: pigeoncoin-nevermore
+    hostname: pigeoncoin-nevermore
+    environment:
+      URL: ${URL}
+      USERNAME: ${USERNAME}
+      PASSWORD: ${PASSWORD}
+    logging: *default-logging
+
+#  pigeoncoin-cpu-cpuminer:
+#    build:
+#      context: .
+#      args:
+#        ARCH: ${ARCH}
+#      dockerfile: Dockerfile.cpu-cpuminer.${ARCH}
+#    image: sofwerx/pigeoncoin-cpu-cpuminer
+#    container_name: pigeoncoin-cpu-cpuminer
+#    hostname: pigeoncoin-cpu-cpuminer
+#    environment:
+#      URL: ${URL}
+#      USERNAME: ${USERNAME}
+#      PASSWORD: ${PASSWORD}
+#    logging: *default-logging
+
